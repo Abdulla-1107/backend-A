@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider     = "prisma-client-js"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  name_uz     String
+  name_ru     String
+  name_en     String
+  amount      Int
+  price       Int
+  describtion String
+  has_manual  Boolean     @default(true)
+  size        Int
+  color_uz    String
+  color_ru    String
+  color_en    String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  xususiyats  Xususiyat[]
+  orderItems  OrderItem[]
+  materials   Material[]
+}
+
+model Xususiyat {
+  id String @id @default(uuid())
+
+  name_uz   String
+  name_ru   String
+  name_en   String
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Material {
+  id String @id @default(uuid())
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name_uz   String
+  name_ru   String
+  name_en   String
+}
+
+model Order {
+  id String @id @default(uuid())
+
+  fullName    String
+  phoneNumber String
+  location    String
+  oferta      Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+}
+
+model OrderItem {
+  id        String @id @default(uuid())
+  productId String
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Contact {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
